@@ -1,4 +1,4 @@
-VFLAGS := -skip-unused
+VFLAGS := -skip-unused -enable-globals
 PRODFLAGS := $(VFLAGS) -prod
 OUT := -o chess
 
