@@ -8,6 +8,8 @@ fn (mut game Game) draw_board() {
 	mut temp := ''
 	mut i := 8
 
+	term.clear()
+	
 	for tiles in game.board {
 		temp = ''
 		for tile in tiles {

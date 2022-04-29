@@ -16,12 +16,18 @@ mut:
 	// NOTE: [] is vert, [][] is hor
 	// [0][0] == a8, [7][7] == h1
 	board [][]Tile
+	// 0 = black, 1 is white
+	turns map[int]u8
 }
 
 pub fn start() {
 	mut game := Game{}
 	game.populate_board()
-	game.draw_board()
+
+	for {
+		game.draw_board() // draw.v
+		game.eval_input() // eval.v
+	}
 }
 
 fn (mut game Game) populate_board() {
@@ -44,7 +50,7 @@ fn (mut game Game) populate_board() {
 	}
 
 	game.board[0][2].piece = Piece{.bishop, 0}
-	game.board[0][5].piece = Piece{.bishop, 0}
+	game.board[0][5].piece = Piece{.d_bishop, 0}
 
 	game.board[0][3].piece = Piece{.queen, 0}
 	game.board[0][4].piece = Piece{.king, 0}
