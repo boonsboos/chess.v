@@ -4,68 +4,85 @@ enum Kind {
 	empty = 0
 	pawn = 1
 	horse = 2
-	bishop = 3
-	rook = 4
-	queen = 5
-	king = 6
+	d_bishop = 3 // dark square bishop
+	bishop = 4
+	rook = 5
+	queen = 6
+	king = 7
 }
 
 struct Game {
 mut:
 	// NOTE: [] is vert, [][] is hor
-	pieces [][]Piece
+	// [0][0] == a8, [7][7] == h1
+	board [][]Tile
 }
 
 pub fn start() {
 	mut game := Game{}
-	populate(mut game)
+	game.populate_board()
+	game.draw_board()
 }
 
-fn populate(mut game Game) {
+fn (mut game Game) populate_board() {
 	
-	game.pieces = [][]Piece{len: 8}
-	
-	for mut i in game.pieces {
-		i = []Piece{len: 8, init: Empty{} }
-	}
+	game.board = [][]Tile{len: 8, init: []Tile{len: 8} }
 
 	// pawns
-	for i in [1, 6] {
-		for j in 0..8 {
-			game.pieces[i][j] = ChessPiece{kind: .pawn}
-		}
+	for j in 0..8 {
+		game.board[1][j].piece = Piece{.pawn, 0} // black pawns
+		game.board[6][j].piece = Piece{.pawn, 1} // white pawns
 	}
-
-	// white pieces
-	for j in [0, 7] {
-		game.pieces[0][j] = ChessPiece{kind: .rook, color: 1}
-	}
-
-	for j in [1, 6] {
-		game.pieces[0][j] = ChessPiece{kind: .horse, color: 1}
-	}
-
-	game.pieces[0][2] = ChessPiece{.bishop, 1, true}
-	game.pieces[0][5] = ChessPiece{.bishop, 1, false}
-
-	game.pieces[0][3] = ChessPiece{kind: .queen, color: 1}
-	game.pieces[0][4] = ChessPiece{kind: .king, color: 1}
 
 	// black pieces
 	for j in [0, 7] {
-		game.pieces[7][j] = ChessPiece{kind: .rook, color: 0}
+		game.board[0][j].piece = Piece{.rook, 0}
 	}
 
 	for j in [1, 6] {
-		game.pieces[7][j] = ChessPiece{kind: .horse, color: 0}
+		game.board[0][j].piece = Piece{.horse, 0}
 	}
 
-	game.pieces[7][2] = ChessPiece{.bishop, 0, false}
-	game.pieces[7][5] = ChessPiece{.bishop, 0, true}
-	
-	game.pieces[7][3] = ChessPiece{kind: .queen, color: 0}
-	game.pieces[7][4] = ChessPiece{kind: .king, color: 0}
+	game.board[0][2].piece = Piece{.bishop, 0}
+	game.board[0][5].piece = Piece{.bishop, 0}
 
-	println(game.pieces)
+	game.board[0][3].piece = Piece{.queen, 0}
+	game.board[0][4].piece = Piece{.king, 0}
+
+	// white pieces
+	for j in [0, 7] {
+		game.board[7][j].piece = Piece{.rook, 1}
+	}
+
+	for j in [1, 6] {
+		game.board[7][j].piece = Piece{.horse, 1}
+	}
+
+	game.board[7][2].piece = Piece{.bishop, 1}
+	game.board[7][5].piece = Piece{.d_bishop, 1}
+	
+	game.board[7][3].piece = Piece{.queen, 1}
+	game.board[7][4].piece = Piece{.king, 1}
+
+	
+	// set tile colors
+	for i, mut tiles in game.board {
+		// even rows start with white squares
+		if i % 2 == 1 {
+			for j, mut tile in tiles {
+				if j % 2 == 1{
+					tile.dark_square = true
+				}
+			}
+			continue // skip writing else, just looks better
+		}
+
+		// odd rows start with dark squares
+		for j, mut tile in tiles {
+			if j % 2 == 0 {
+				tile.dark_square = true	
+			}
+		}
+	}
 
 }
