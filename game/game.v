@@ -1,5 +1,8 @@
 module game
 
+const cols = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+const rows = [u8(8), 7, 6, 5, 4, 3, 2, 1]
+
 enum Kind {
 	empty = 0
 	pawn = 1
@@ -11,13 +14,15 @@ enum Kind {
 	king = 7
 }
 
+[heap]
 struct Game {
 mut:
 	// NOTE: [] is vert, [][] is hor
 	// [0][0] == a8, [7][7] == h1
 	board [][]Tile
 	// 0 = black, 1 is white
-	turns map[int]u8
+	turns map[u8]int
+	turn u8 = 1
 }
 
 pub fn start() {
@@ -76,7 +81,11 @@ fn (mut game Game) populate_board() {
 		// even rows start with white squares
 		if i % 2 == 1 {
 			for j, mut tile in tiles {
-				if j % 2 == 1{
+				// coordinates
+				tile.row = rows[i]
+				tile.col = cols[j]
+
+				if j % 2 == 1 {
 					tile.dark_square = true
 				}
 			}
@@ -85,10 +94,39 @@ fn (mut game Game) populate_board() {
 
 		// odd rows start with dark squares
 		for j, mut tile in tiles {
+
+			// coordinates
+			tile.row = rows[i]
+			tile.col = cols[j]
+
 			if j % 2 == 0 {
-				tile.dark_square = true	
+				tile.dark_square = true
 			}
 		}
 	}
 
+}
+
+fn (game Game) find_tile(col string, row u8) Tile {
+	i, j := game.search_tile(col, row)
+	if i > 7 || j > 7 { return Tile{} }
+	
+	return game.board[i][j]
+}
+
+fn (game Game) search_tile(col string, row u8) (int, int) {
+	if col !in cols || row !in rows { return 8, 8 }
+
+	for i, tiles in game.board {
+		for j, tile in tiles {
+			if tile.col == col && tile.row == row { return i, j }
+		}
+	}
+
+	return 8, 8
+}
+
+[inline]
+fn has_piece(t Tile) bool {
+	return t.piece.kind != .empty
 }

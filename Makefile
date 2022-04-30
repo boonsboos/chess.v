@@ -12,4 +12,4 @@ test-nix:
 	v $(VFLAGS) $(OUT) .
 
 prod-nix:
-	v $(PRODFLAGS) $(OUT) -cc clang .
+	v $(PRODFLAGS) $(OUT) -compress -cc clang .
